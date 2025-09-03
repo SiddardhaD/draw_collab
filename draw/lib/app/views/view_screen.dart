@@ -1,6 +1,6 @@
+import 'package:draw/app/model/draw_point.dart';
 import 'package:draw/app/utils/styles.dart';
 import 'package:draw/app/viewmodels/draw_view_model.dart';
-import 'package:draw/app/views/draw_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -22,7 +22,7 @@ class ViewScreen extends ConsumerWidget {
                   child: Text("VIEW", style: HeadingStyle.h1()),
                 ),
                 CustomPaint(
-                  painter: DrawingPainter(points),
+                  painter: ViewDrawingPainter(points),
                   size: Size.infinite,
                 ),
               ],
@@ -34,4 +34,32 @@ class ViewScreen extends ConsumerWidget {
       ),
     );
   }
+}
+
+class ViewDrawingPainter extends CustomPainter {
+  final List<DrawPoint?> points;
+
+  ViewDrawingPainter(this.points);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint =
+        Paint()
+          ..color = Colors.blue
+          ..strokeWidth = 4.0
+          ..strokeCap = StrokeCap.round;
+
+    for (int i = 0; i < points.length - 1; i++) {
+      if (points[i] != null && points[i + 1] != null) {
+        final current = points[i];
+        final next = points[i + 1];
+        if (current!.x != 0.0 && next!.x != 0.0) {
+          canvas.drawLine(current.toOffset(), next.toOffset(), paint);
+        }
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(ViewDrawingPainter oldDelegate) => true;
 }

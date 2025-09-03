@@ -36,8 +36,66 @@ class DrawingViewModel extends StateNotifier<List<DrawPoint?>> {
   }
 
   void undo() {
-    final lastNullIndex = state.lastIndexWhere((p) => p == null);
-    state = lastNullIndex == -1 ? [] : state.sublist(0, lastNullIndex + 1);
+    final strokes = <List<DrawPoint?>>[];
+    var currentStroke = <DrawPoint?>[];
+
+    for (int i = 0; i < state.length; i++) {
+      if (i < state.length - 1 && state[i] == null && state[i + 1] == null) {
+        if (currentStroke.isNotEmpty) {
+          strokes.add(List.from(currentStroke));
+          currentStroke.clear();
+        }
+        i++;
+      } else {
+        currentStroke.add(state[i]);
+      }
+    }
+
+    if (currentStroke.isNotEmpty) {
+      strokes.add(currentStroke);
+    }
+    if (strokes.isNotEmpty) {
+      strokes.removeLast();
+    }
+
+    final newState = <DrawPoint?>[];
+    for (var stroke in strokes) {
+      newState.addAll(stroke);
+      newState.addAll([null, null]);
+    }
+
+    state = newState;
+  }
+
+  Future<void> deleteLastStroke() async {
+    final firestore = FirebaseFirestore.instance;
+    final pointsRef = firestore
+        .collection('drawings')
+        .doc('2')
+        .collection('points');
+
+    final snapshot = await pointsRef.orderBy('t').get();
+    final docs = snapshot.docs;
+    if (docs.isEmpty) return;
+
+    final sepIndexes = <int>[];
+    for (int i = 0; i < docs.length; i++) {
+      final data = docs[i].data();
+      if (!data.containsKey('x') && !data.containsKey('y')) {
+        sepIndexes.add(i);
+      }
+    }
+
+    if (sepIndexes.length < 2) return;
+    final start = sepIndexes[sepIndexes.length - 2];
+    final end = sepIndexes.last;
+
+    if (start > end) return;
+    final batch = firestore.batch();
+    for (int i = start; i < end; i++) {
+      batch.delete(docs[i].reference);
+    }
+    await batch.commit();
   }
 
   // void changePenColor(Color color) {
@@ -65,6 +123,7 @@ final drawingStreamProvider = StreamProvider<List<DrawPoint>>((ref) {
           return DrawPoint(
             data["x"]?.toDouble() ?? 0.0,
             data["y"]?.toDouble() ?? 0.0,
+            timestamp: DateTime.parse(data["t"]),
           );
         }).toList();
       });

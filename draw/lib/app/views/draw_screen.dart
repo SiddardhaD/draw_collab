@@ -47,6 +47,7 @@ class DrawingScreen extends ConsumerWidget {
             mini: true,
             onPressed: () {
               ref.read(drawingPointsProvider.notifier).undo();
+              ref.read(drawingPointsProvider.notifier).deleteLastStroke();
             },
             tooltip: 'Undo',
             child: Icon(Icons.undo),
