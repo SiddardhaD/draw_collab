@@ -44,13 +44,12 @@ class ViewDrawingPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint =
-        Paint()
-          ..color = Colors.blue
-          ..strokeWidth = 4.0
-          ..strokeCap = StrokeCap.round;
-
     for (int i = 0; i < points.length - 1; i++) {
+      final paint =
+          Paint()
+            ..color = Colors.blue
+            ..strokeWidth = points[i] == null ? 4.0 : points[i]!.stroke
+            ..strokeCap = StrokeCap.round;
       if (points[i] != null && points[i + 1] != null) {
         final current = points[i];
         final next = points[i + 1];

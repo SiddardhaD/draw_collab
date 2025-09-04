@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:draw/app/controller/draw_controller.dart';
 import 'package:draw/app/model/draw_point.dart';
 import 'package:draw/app/service/draw_service.dart';
+import 'package:draw/app/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -17,15 +18,23 @@ final drawingPointsProvider =
     StateNotifierProvider<DrawingViewModel, List<DrawPoint?>>((ref) {
       return DrawingViewModel(ref.read(drawingControllerProvider));
     });
+final strokeWidthProvider = StateProvider<double>((ref) => 4.0);
 
 class DrawingViewModel extends StateNotifier<List<DrawPoint?>> {
   final DrawingController _controller;
+  double _strokeWidth = 4.0;
 
   DrawingViewModel(this._controller) : super([]);
 
-  void addPoint(double x, double y) {
-    final point = DrawPoint(x, y);
-    _controller.addPoint(x, y);
+  double get strokeWidth => _strokeWidth;
+  void addPoint(double x, double y, double stroke) {
+    final point = DrawPoint(
+      x,
+      y,
+      Color(int.parse(AppColors.defaultColor, radix: 16)),
+      stroke,
+    );
+    _controller.addPoint(x, y, stroke);
     state = [...state, point];
   }
 
@@ -98,6 +107,10 @@ class DrawingViewModel extends StateNotifier<List<DrawPoint?>> {
     await batch.commit();
   }
 
+  void setStrokeWidth(double width) {
+    _strokeWidth = width;
+  }
+
   // void changePenColor(Color color) {
   //   _penColor = color; // store a color in ViewModel
   // }
@@ -123,6 +136,8 @@ final drawingStreamProvider = StreamProvider<List<DrawPoint>>((ref) {
           return DrawPoint(
             data["x"]?.toDouble() ?? 0.0,
             data["y"]?.toDouble() ?? 0.0,
+            data["p"] ?? Color(int.parse(AppColors.defaultColor, radix: 16)),
+            data["s"] ?? 4.0,
             timestamp: DateTime.parse(data["t"]),
           );
         }).toList();

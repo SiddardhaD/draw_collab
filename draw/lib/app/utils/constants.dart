@@ -3,3 +3,7 @@ class AppStrings {
   static const error = "Error";
   static const draw = "DRAW";
 }
+
+class AppColors {
+  static const defaultColor = "FFF00FF0";
+}

@@ -1,13 +1,21 @@
 import 'package:draw/app/model/draw_point.dart';
 import 'package:draw/app/service/draw_service.dart';
+import 'package:draw/app/utils/constants.dart';
+import 'package:flutter/widgets.dart';
 
 class DrawingController {
   final DrawingService _service;
 
   DrawingController(this._service);
 
-  void addPoint(double x, double y) {
-    final point = DrawPoint(x, y, timestamp: DateTime.now());
+  void addPoint(double x, double y, double stroke) {
+    final point = DrawPoint(
+      x,
+      y,
+      Color(int.parse(AppColors.defaultColor, radix: 16)),
+      stroke,
+      timestamp: DateTime.now(),
+    );
     _service.addPoint(point);
   }
 
