@@ -26,7 +26,11 @@ class DrawingScreen extends ConsumerWidget {
             onPanUpdate: (details) {
               ref
                   .read(drawingPointsProvider.notifier)
-                  .addPoint(details.localPosition.dx, details.localPosition.dy);
+                  .addPoint(
+                    details.localPosition.dx,
+                    details.localPosition.dy,
+                    ref.watch(strokeWidthProvider.notifier).state,
+                  );
             },
             onPanEnd: (_) {
               debugPrint("Length is ${points.length}");
@@ -69,16 +73,46 @@ class DrawingScreen extends ConsumerWidget {
 
           // Change Pen Color
           FloatingActionButton(
-            heroTag: 'pen_color',
             mini: true,
             onPressed: () {
-              // ref
-              //     .read(drawingPointsProvider.notifier)
-              //     .changePenColor(Colors.red);
+              showModalBottomSheet(
+                context: context,
+                builder: (ctx) {
+                  return Consumer(
+                    builder: (context, ref, _) {
+                      final strokeWidth = ref.watch(strokeWidthProvider);
+                      return StatefulBuilder(
+                        builder: (context, setState) {
+                          return Container(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Text("Stroke Width"),
+                                Slider(
+                                  min: 4,
+                                  max: 100,
+                                  divisions: 24,
+                                  label: strokeWidth.round().toString(),
+                                  value: strokeWidth,
+                                  onChanged: (val) {
+                                    ref
+                                        .read(strokeWidthProvider.notifier)
+                                        .state = val;
+                                  },
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  );
+                },
+              );
             },
-
-            tooltip: 'Change Pen Color',
-            child: Icon(Icons.color_lens),
+            tooltip: 'Stroke',
+            child: Icon(Icons.edit),
           ),
         ],
       ),
@@ -93,13 +127,12 @@ class DrawingPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint =
-        Paint()
-          ..color = Colors.blue
-          ..strokeWidth = 4.0
-          ..strokeCap = StrokeCap.round;
-
     for (int i = 0; i < points.length - 1; i++) {
+      final paint =
+          Paint()
+            ..color = Color(int.parse(AppColors.defaultColor, radix: 16))
+            ..strokeWidth = points[i] == null ? 4.0 : points[i]!.stroke
+            ..strokeCap = StrokeCap.round;
       if (points[i] != null && points[i + 1] != null) {
         canvas.drawLine(
           points[i]!.toOffset(),

@@ -11,6 +11,7 @@ class DrawingService {
       "x": point.x,
       "y": point.y,
       "t": point.timestamp.toIso8601String(),
+      's': point.stroke,
     });
   }
 
