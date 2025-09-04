@@ -1,4 +1,5 @@
 import 'package:draw/app/model/draw_point.dart';
+import 'package:draw/app/utils/constants.dart';
 import 'package:draw/app/utils/styles.dart';
 import 'package:draw/app/viewmodels/draw_view_model.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +20,7 @@ class ViewScreen extends ConsumerWidget {
               children: [
                 Align(
                   alignment: Alignment.topCenter,
-                  child: Text("VIEW", style: HeadingStyle.h1()),
+                  child: Text(AppStrings.view, style: HeadingStyle.h1()),
                 ),
                 CustomPaint(
                   painter: ViewDrawingPainter(points),
@@ -29,7 +30,7 @@ class ViewScreen extends ConsumerWidget {
             );
           },
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, st) => Center(child: Text("Error: $e")),
+          error: (e, st) => Center(child: Text("${AppStrings.error}: $e")),
         ),
       ),
     );

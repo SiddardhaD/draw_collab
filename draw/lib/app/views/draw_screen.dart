@@ -1,4 +1,5 @@
 import 'package:draw/app/model/draw_point.dart';
+import 'package:draw/app/utils/constants.dart';
 import 'package:draw/app/utils/styles.dart';
 import 'package:draw/app/viewmodels/draw_view_model.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +19,7 @@ class DrawingScreen extends ConsumerWidget {
             padding: EdgeInsets.only(top: 8),
             child: Align(
               alignment: Alignment.topCenter,
-              child: Text("DRAW", style: HeadingStyle.h1()),
+              child: Text(AppStrings.draw, style: HeadingStyle.h1()),
             ),
           ),
           GestureDetector(
