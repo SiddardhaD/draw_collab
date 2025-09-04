@@ -1,4 +1,4 @@
-import 'package:draw/app/views/split_screen.dart';
+import 'package:draw/app/views/channel_lobby_screen.dart';
 import 'package:draw/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +22,7 @@ class DrawingApp extends StatelessWidget {
     return ProviderScope(
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: SplitScreen(),
+        home: ChannelLobbyScreen(),
       ),
     );
   }
