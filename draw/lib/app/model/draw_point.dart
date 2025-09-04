@@ -11,12 +11,10 @@ class DrawPoint {
 
   Offset toOffset() => Offset(x, y);
 
-  // Convert to JSON for Firebase
   Map<String, dynamic> toJson() {
     return {'x': x, 'y': y, 'timestamp': timestamp.toIso8601String()};
   }
 
-  // Create from JSON (Firebase document)
   factory DrawPoint.fromJson(Map<String, dynamic> json) {
     return DrawPoint(
       (json['x'] as num).toDouble(),
