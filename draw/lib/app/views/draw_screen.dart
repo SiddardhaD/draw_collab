@@ -1,20 +1,23 @@
 import 'package:draw/app/model/draw_point.dart';
 import 'package:draw/app/utils/constants.dart';
 import 'package:draw/app/utils/styles.dart';
+import 'package:draw/app/viewmodels/channel_lobby_view_model.dart';
 import 'package:draw/app/viewmodels/draw_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class DrawingScreen extends ConsumerWidget {
-  const DrawingScreen({super.key});
-
+  final String background;
+  const DrawingScreen({super.key, required this.background});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final points = ref.watch(drawingPointsProvider);
-
+    final channelID = ref.read(channelLobbyProvider.notifier).getChannelId();
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Stack(
         children: [
+          Positioned.fill(child: Image.asset(background!, fit: BoxFit.contain)),
           Padding(
             padding: EdgeInsets.only(top: 8),
             child: Align(
@@ -30,11 +33,12 @@ class DrawingScreen extends ConsumerWidget {
                     details.localPosition.dx,
                     details.localPosition.dy,
                     ref.watch(strokeWidthProvider.notifier).state,
+                    channelID,
                   );
             },
             onPanEnd: (_) {
               debugPrint("Length is ${points.length}");
-              ref.read(drawingPointsProvider.notifier).addSeparator();
+              ref.read(drawingPointsProvider.notifier).addSeparator(channelID);
             },
             child: CustomPaint(
               painter: DrawingPainter(points),
@@ -52,7 +56,9 @@ class DrawingScreen extends ConsumerWidget {
             mini: true,
             onPressed: () {
               ref.read(drawingPointsProvider.notifier).undo();
-              ref.read(drawingPointsProvider.notifier).deleteLastStroke();
+              ref
+                  .read(drawingPointsProvider.notifier)
+                  .deleteLastStroke(channelID);
             },
             tooltip: 'Undo',
             child: Icon(Icons.undo),
@@ -64,7 +70,7 @@ class DrawingScreen extends ConsumerWidget {
             heroTag: 'delete_all',
             mini: true,
             onPressed: () {
-              ref.read(drawingPointsProvider.notifier).clear();
+              ref.read(drawingPointsProvider.notifier).clear(channelID);
             },
             tooltip: 'Clear All',
             child: Icon(Icons.delete),

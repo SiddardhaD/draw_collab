@@ -1,7 +1,6 @@
-import 'dart:math';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-enum Gender { male, female, other }
+enum Gender { male, female }
 
 class ChannelLobbyState {
   final String displayName;
@@ -46,22 +45,12 @@ class ChannelLobbyNotifier extends StateNotifier<ChannelLobbyState> {
     state = state.copyWith(channelId: id.trim().toUpperCase());
   }
 
-  void ensureUserId() {
-    if (state.userId == null || state.userId!.isEmpty) {
-      final newId =
-          'u_${DateTime.now().millisecondsSinceEpoch}_${_randomCode(4)}';
-      state = state.copyWith(userId: newId);
-    }
+  String getChannelId() {
+    return state.channelId;
   }
 
   bool isChannelIDPresent() {
     return state.channelId == "" ? false : true;
-  }
-
-  String _randomCode([int length = 6]) {
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    final r = Random.secure();
-    return List.generate(length, (_) => chars[r.nextInt(chars.length)]).join();
   }
 }
 

@@ -6,32 +6,39 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ViewScreen extends ConsumerWidget {
-  const ViewScreen({super.key});
+  final String background;
+  const ViewScreen({super.key, required this.background});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final asyncPoints = ref.watch(drawingStreamProvider);
 
     return SafeArea(
-      child: Scaffold(
-        body: asyncPoints.when(
-          data: (points) {
-            return Stack(
-              children: [
-                Align(
-                  alignment: Alignment.topCenter,
-                  child: Text(AppStrings.view, style: HeadingStyle.h1()),
-                ),
-                CustomPaint(
-                  painter: ViewDrawingPainter(points),
-                  size: Size.infinite,
-                ),
-              ],
-            );
-          },
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, st) => Center(child: Text("${AppStrings.error}: $e")),
-        ),
+      bottom: false,
+      child: asyncPoints.when(
+        data: (points) {
+          return Stack(
+            children: [
+              Positioned(
+                top: MediaQuery.of(context).size.height * 0.065,
+                right: 0,
+                left: 0,
+                bottom: 0,
+                child: Image.asset(background, fit: BoxFit.cover),
+              ),
+              Align(
+                alignment: Alignment.topCenter,
+                child: Text(AppStrings.view, style: HeadingStyle.h1()),
+              ),
+              CustomPaint(
+                painter: ViewDrawingPainter(points),
+                size: Size.infinite,
+              ),
+            ],
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, st) => Center(child: Text("${AppStrings.error}: $e")),
       ),
     );
   }
