@@ -4,26 +4,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class SplitScreen extends ConsumerWidget {
-  const SplitScreen({super.key});
+  final String background;
+  const SplitScreen({super.key, required this.background});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Column(
         children: [
           Container(
-            padding: EdgeInsets.all(8),
             decoration: BoxDecoration(
-              border: Border.all(
-                color: const Color.fromARGB(112, 100, 105, 107),
-              ),
+              // border: Border.all(
+              //   color: const Color.fromARGB(112, 100, 105, 107),
+              // ),
             ),
             height: MediaQuery.of(context).size.height / 2,
-            child: ViewScreen(),
+            child: ViewScreen(background: background),
           ),
           SizedBox(
             height: MediaQuery.of(context).size.height / 2,
-            child: DrawingScreen(),
+            child: DrawingScreen(background: background),
           ),
         ],
       ),

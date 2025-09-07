@@ -4,10 +4,9 @@ import 'package:draw/app/model/draw_point.dart';
 class DrawingService {
   final List<DrawPoint> _points = [];
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
-  void addPoint(DrawPoint point) {
+  void addPoint(DrawPoint point, String channelID) {
     _points.add(point);
-    _firestore.collection('drawings').doc("2").collection('points').add({
+    _firestore.collection('drawings').doc(channelID).collection('points').add({
       "x": point.x,
       "y": point.y,
       "t": point.timestamp.toIso8601String(),
@@ -15,8 +14,8 @@ class DrawingService {
     });
   }
 
-  void addNull() {
-    _firestore.collection('drawings').doc("2").collection('points').add({
+  void addNull(String channelID) {
+    _firestore.collection('drawings').doc(channelID).collection('points').add({
       "t": DateTime.now().toIso8601String(),
     });
   }
@@ -25,14 +24,17 @@ class DrawingService {
     return List.unmodifiable(_points);
   }
 
-  void clear() {
+  void clear(String channelID) {
     _points.clear();
-    _firestore.collection('drawings').doc("2").collection('points').get().then((
-      snapshot,
-    ) {
-      for (var doc in snapshot.docs) {
-        doc.reference.delete();
-      }
-    });
+    _firestore
+        .collection('drawings')
+        .doc(channelID)
+        .collection('points')
+        .get()
+        .then((snapshot) {
+          for (var doc in snapshot.docs) {
+            doc.reference.delete();
+          }
+        });
   }
 }

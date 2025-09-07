@@ -8,7 +8,7 @@ class DrawingController {
 
   DrawingController(this._service);
 
-  void addPoint(double x, double y, double stroke) {
+  void addPoint(double x, double y, double stroke, String channelID) {
     final point = DrawPoint(
       x,
       y,
@@ -16,18 +16,18 @@ class DrawingController {
       stroke,
       timestamp: DateTime.now(),
     );
-    _service.addPoint(point);
+    _service.addPoint(point, channelID);
   }
 
-  void addNull() {
-    _service.addNull();
+  void addNull(String channelID) {
+    _service.addNull(channelID);
   }
 
   List<DrawPoint> getPoints() {
     return _service.getPoints();
   }
 
-  void clear() {
-    _service.clear();
+  void clear(String channelID) {
+    _service.clear(channelID);
   }
 }

@@ -3,6 +3,7 @@ import 'package:draw/app/controller/draw_controller.dart';
 import 'package:draw/app/model/draw_point.dart';
 import 'package:draw/app/service/draw_service.dart';
 import 'package:draw/app/utils/constants.dart';
+import 'package:draw/app/viewmodels/channel_lobby_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -27,20 +28,20 @@ class DrawingViewModel extends StateNotifier<List<DrawPoint?>> {
   DrawingViewModel(this._controller) : super([]);
 
   double get strokeWidth => _strokeWidth;
-  void addPoint(double x, double y, double stroke) {
+  void addPoint(double x, double y, double stroke, String channelID) {
     final point = DrawPoint(
       x,
       y,
       Color(int.parse(AppColors.defaultColor, radix: 16)),
       stroke,
     );
-    _controller.addPoint(x, y, stroke);
+    _controller.addPoint(x, y, stroke, channelID);
     state = [...state, point];
   }
 
-  void addSeparator() {
+  void addSeparator(String channelID) {
     state = [...state, null, null];
-    _controller.addNull();
+    _controller.addNull(channelID);
     debugPrint("last  = ${state.last}");
   }
 
@@ -76,11 +77,11 @@ class DrawingViewModel extends StateNotifier<List<DrawPoint?>> {
     state = newState;
   }
 
-  Future<void> deleteLastStroke() async {
+  Future<void> deleteLastStroke(channelID) async {
     final firestore = FirebaseFirestore.instance;
     final pointsRef = firestore
         .collection('drawings')
-        .doc('2')
+        .doc(channelID)
         .collection('points');
 
     final snapshot = await pointsRef.orderBy('t').get();
@@ -115,8 +116,8 @@ class DrawingViewModel extends StateNotifier<List<DrawPoint?>> {
   //   _penColor = color; // store a color in ViewModel
   // }
 
-  void clear() {
-    _controller.clear();
+  void clear(String channelID) {
+    _controller.clear(channelID);
     state = [];
   }
 }
@@ -124,9 +125,34 @@ class DrawingViewModel extends StateNotifier<List<DrawPoint?>> {
 /// 16033
 final drawingStreamProvider = StreamProvider<List<DrawPoint>>((ref) {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
+  final chanelId = ref.read(channelLobbyProvider.notifier).getChannelId();
   return firestore
       .collection('drawings')
-      .doc('2')
+      .doc(chanelId)
+      .collection('points')
+      .orderBy('t')
+      .snapshots()
+      .map((snapshot) {
+        return snapshot.docs.map((doc) {
+          final data = doc.data();
+          return DrawPoint(
+            data["x"]?.toDouble() ?? 0.0,
+            data["y"]?.toDouble() ?? 0.0,
+            data["p"] ?? Color(int.parse(AppColors.defaultColor, radix: 16)),
+            data["s"] ?? 4.0,
+            timestamp: DateTime.parse(data["t"]),
+          );
+        }).toList();
+      });
+});
+final firebaseConnection = StreamProvider.family<List<DrawPoint>, String>((
+  ref,
+  channelID,
+) {
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+  return firestore
+      .collection('drawings')
+      .doc(channelID)
       .collection('points')
       .orderBy('t')
       .snapshots()

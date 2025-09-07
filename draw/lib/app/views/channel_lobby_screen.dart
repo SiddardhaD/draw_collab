@@ -1,4 +1,7 @@
+import 'package:draw/app/utils/constants.dart';
 import 'package:draw/app/viewmodels/channel_lobby_view_model.dart';
+import 'package:draw/app/viewmodels/draw_view_model.dart';
+import 'package:draw/app/views/selection_screen.dart';
 import 'package:draw/app/views/split_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,7 +23,7 @@ class ChannelLobbyScreen extends ConsumerWidget {
             children: [
               const Spacer(),
               Text(
-                "Join a Channel",
+                AppStrings.joinChannel,
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: Colors.deepPurple,
@@ -162,12 +165,11 @@ class ChannelLobbyScreen extends ConsumerWidget {
                   ),
 
                   onPressed: () async {
-                    lobbyNotifier.ensureUserId();
                     if (!lobbyNotifier.isChannelIDPresent()) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
-                            "Enter Channel Code",
+                            AppStrings.enterChannelCode,
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 12,
@@ -178,10 +180,12 @@ class ChannelLobbyScreen extends ConsumerWidget {
                       );
                       return;
                     }
-
-                    Navigator.push(
+                    ref.read(firebaseConnection(lobbyNotifier.getChannelId()));
+                    await Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => const SplitScreen()),
+                      MaterialPageRoute(
+                        builder: (_) => SketchSelectionScreen(),
+                      ),
                     );
                   },
                 ),
