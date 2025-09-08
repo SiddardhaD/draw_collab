@@ -28,14 +28,20 @@ class DrawingViewModel extends StateNotifier<List<DrawPoint?>> {
   DrawingViewModel(this._controller) : super([]);
 
   double get strokeWidth => _strokeWidth;
-  void addPoint(double x, double y, double stroke, String channelID) {
+  void addPoint(
+    double x,
+    double y,
+    double stroke,
+    String channelID,
+    BuildContext context,
+  ) {
     final point = DrawPoint(
       x,
       y,
       Color(int.parse(AppColors.defaultColor, radix: 16)),
       stroke,
     );
-    _controller.addPoint(x, y, stroke, channelID);
+    _controller.addPoint(x, y, stroke, channelID, context);
     state = [...state, point];
   }
 
@@ -125,7 +131,9 @@ class DrawingViewModel extends StateNotifier<List<DrawPoint?>> {
 /// 16033
 final drawingStreamProvider = StreamProvider<List<DrawPoint>>((ref) {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
+
   final chanelId = ref.read(channelLobbyProvider.notifier).getChannelId();
+
   return firestore
       .collection('drawings')
       .doc(chanelId)
