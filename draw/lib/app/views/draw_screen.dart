@@ -34,6 +34,7 @@ class DrawingScreen extends ConsumerWidget {
                     details.localPosition.dy,
                     ref.watch(strokeWidthProvider.notifier).state,
                     channelID,
+                    context,
                   );
             },
             onPanEnd: (_) {
@@ -141,7 +142,7 @@ class DrawingPainter extends CustomPainter {
             ..strokeCap = StrokeCap.round;
       if (points[i] != null && points[i + 1] != null) {
         canvas.drawLine(
-          points[i]!.toOffset(),
+          (points[i]!).toOffset(),
           points[i + 1]!.toOffset(),
           paint,
         );
