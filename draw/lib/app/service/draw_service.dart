@@ -5,7 +5,12 @@ import 'package:flutter/material.dart';
 class DrawingService {
   final List<DrawPoint> _points = [];
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  void addPoint(DrawPoint point, String channelID, BuildContext context) {
+  void addPoint(
+    DrawPoint point,
+    String channelID,
+    BuildContext context,
+    String penColor,
+  ) {
     final size = MediaQuery.of(context).size;
     _points.add(point);
     _firestore.collection('drawings').doc(channelID).collection('points').add({
@@ -13,6 +18,7 @@ class DrawingService {
       "y": point.y / size.height,
       "t": point.timestamp.toIso8601String(),
       's': point.stroke,
+      "p": penColor,
     });
   }
 

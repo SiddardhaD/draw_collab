@@ -14,11 +14,7 @@ class SplitScreen extends ConsumerWidget {
       body: Column(
         children: [
           Container(
-            decoration: BoxDecoration(
-              // border: Border.all(
-              //   color: const Color.fromARGB(112, 100, 105, 107),
-              // ),
-            ),
+            decoration: BoxDecoration(),
             height: MediaQuery.of(context).size.height / 2,
             child: ViewScreen(background: background),
           ),

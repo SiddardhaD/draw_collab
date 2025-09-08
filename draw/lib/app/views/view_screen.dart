@@ -56,7 +56,10 @@ class ViewDrawingPainter extends CustomPainter {
     for (int i = 0; i < points.length - 1; i++) {
       final paint =
           Paint()
-            ..color = Colors.blue
+            ..color =
+                points[i] == null
+                    ? Color(int.parse(AppColors.defaultColor, radix: 16))
+                    : points[i]!.penColor
             ..strokeWidth = points[i] == null ? 4.0 : points[i]!.stroke
             ..strokeCap = StrokeCap.round;
       if (points[i] != null && points[i + 1] != null) {
