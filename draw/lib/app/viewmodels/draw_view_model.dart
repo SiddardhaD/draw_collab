@@ -15,6 +15,10 @@ final drawingControllerProvider = Provider<DrawingController>((ref) {
   return DrawingController(ref.read(drawingServiceProvider));
 });
 
+final colorchangeProvider = Provider<DrawingController>((ref) {
+  return DrawingController(ref.read(drawingServiceProvider));
+});
+
 final drawingPointsProvider =
     StateNotifierProvider<DrawingViewModel, List<DrawPoint?>>((ref) {
       return DrawingViewModel(ref.read(drawingControllerProvider));
@@ -24,10 +28,12 @@ final strokeWidthProvider = StateProvider<double>((ref) => 4.0);
 class DrawingViewModel extends StateNotifier<List<DrawPoint?>> {
   final DrawingController _controller;
   double _strokeWidth = 4.0;
+  String _penColor = AppColors.defaultColor;
 
   DrawingViewModel(this._controller) : super([]);
 
   double get strokeWidth => _strokeWidth;
+  String get penColor => _penColor;
   void addPoint(
     double x,
     double y,
@@ -38,10 +44,10 @@ class DrawingViewModel extends StateNotifier<List<DrawPoint?>> {
     final point = DrawPoint(
       x,
       y,
-      Color(int.parse(AppColors.defaultColor, radix: 16)),
+      Color(int.parse(_penColor, radix: 16)),
       stroke,
     );
-    _controller.addPoint(x, y, stroke, channelID, context);
+    _controller.addPoint(x, y, stroke, channelID, context, _penColor);
     state = [...state, point];
   }
 
@@ -118,6 +124,10 @@ class DrawingViewModel extends StateNotifier<List<DrawPoint?>> {
     _strokeWidth = width;
   }
 
+  void setPenColor(String penColor) {
+    _penColor = penColor;
+  }
+
   // void changePenColor(Color color) {
   //   _penColor = color; // store a color in ViewModel
   // }
@@ -146,7 +156,9 @@ final drawingStreamProvider = StreamProvider<List<DrawPoint>>((ref) {
           return DrawPoint(
             data["x"]?.toDouble() ?? 0.0,
             data["y"]?.toDouble() ?? 0.0,
-            data["p"] ?? Color(int.parse(AppColors.defaultColor, radix: 16)),
+            data["p"] == null
+                ? Color(int.parse(AppColors.defaultColor, radix: 16))
+                : Color(int.parse(data["p"], radix: 16)),
             data["s"] ?? 4.0,
             timestamp: DateTime.parse(data["t"]),
           );

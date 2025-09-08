@@ -14,15 +14,16 @@ class DrawingController {
     double stroke,
     String channelID,
     BuildContext context,
+    String penColor,
   ) {
     final point = DrawPoint(
       x,
       y,
-      Color(int.parse(AppColors.defaultColor, radix: 16)),
+      Color(int.parse(penColor, radix: 16)),
       stroke,
       timestamp: DateTime.now(),
     );
-    _service.addPoint(point, channelID, context);
+    _service.addPoint(point, channelID, context, penColor);
   }
 
   void addNull(String channelID) {
